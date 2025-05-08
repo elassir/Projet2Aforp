@@ -1,106 +1,90 @@
-# Template bottom tabs with auth flow (Typescript)
+# Application Mobile de Gestion pour Centre Sportif
 
-Typescript Template starter with React Navigation Bottom Tabs and Supabase auth using React Context
+## Présentation du projet
 
-# Preview
+Cette application mobile développée avec React Native et Expo permet aux centres sportifs de moderniser la gestion de leurs activités. Elle offre aux utilisateurs la possibilité de consulter les disponibilités, réserver des terrains, s'inscrire à des cours et recevoir des notifications.
 
 ![../media/authflow.png](../media/authflow.png)
 
-# Installation
+## Fonctionnalités principales
 
-1. Install [node.js](https://nodejs.org/en/)
-2. Install Expo
+- **Gestion des utilisateurs** : Création de compte, authentification sécurisée
+- **Réservation de terrains** : Consultation des disponibilités et réservation de créneaux
+- **Location d'équipements** : Possibilité d'ajouter des équipements à une réservation
+- **Inscription aux cours** : Visualisation et inscription aux différents cours proposés
+- **Notifications** : Rappels automatiques et confirmations de réservation
+- **Interface administrative** : Gestion des ressources pour les administrateurs
 
-   ```jsx
+## Technologies utilisées
+
+- **Frontend** : React Native, Expo, TypeScript
+- **Navigation** : React Navigation (Bottom Tabs + Stack)
+- **Backend** : Supabase (PostgreSQL, Authentification)
+- **UI Components** : Rapi UI
+- **État global** : React Context API
+
+## Installation et démarrage
+
+1. Installer [Node.js](https://nodejs.org/fr/) (version 16 ou supérieure)
+2. Installer Expo CLI
+   ```bash
    npm install --global expo-cli
    ```
-
-3. Download this repo
-4. Install deps on your template folder
-
-   ```jsx
+3. Cloner ce dépôt
+4. Installer les dépendances
+   ```bash
    npm install
    ```
-
-5. Start the environtment
-
-   ```jsx
+5. Configurer Supabase
+   - Créer un projet sur [Supabase.io](https://supabase.io)
+   - Ajouter vos identifiants Supabase dans `./src/initSupabase.ts`
+   ```typescript
+   // Idéalement, stockez ces clés dans un fichier .env
+   export const supabase = createClient(
+     "votre_url_supabase", 
+     "votre_clé_supabase",
+     {
+       localStorage: AsyncStorage as any,
+     }
+   );
+   ```
+6. Lancer l'application
+   ```bash
    expo start
    ```
 
-# Auth Flow
+## Structure du projet
 
-### Supabase Setup
-
-- Set up a new Supabase.io project
-- Fill your supabase credentials to your config inside `./src/initSupabase.ts`
-- You can find your supabase credentials in your project -> settings -> API
-
-  ```jsx
-  // Better put your these secret keys in .env file
-  export const supabase = createClient(
-  	"supabaseUrl", "supabaseKey",
-  	{
-  		localStorage: AsyncStorage as any,
-  	}
-  );
-  ```
-
-and you good to go!
-
-### Prebuilt UI Screens
-
-There are 3 screens included inside `./src/screens/auth` and one more thing its included with the supabase auth function, so you don't need to create the function. The ilustrations I use [undraw](https://undraw.co/)
-
-- Login screen `./src/screens/auth/login.tsx`
-- Register screen `./src/screens/auth/register.tsx`
-- Forget password screen `./src/screens/auth/forget.tsx`
-
-### React Navigation Auth Flow
-
-The checking logged users process is inside `./src/provider/AuthProvider` I use React Context, you can add more functions like get the data of the user and store it to the context (better static data, ex: uid)
-
-Inside the navigator `./src/navigation/AppNavigator.js`
-There's 2 stack navigator :
-
-- `<Auth/>` → for not logged in users stack
-- `<Main/>` → for logged in users stack
-- `<Loading/>` → when checking if the user is logged in or not loading screen
-
-```jsx
-export default () => {
-	const auth = useContext(AuthContext);
-	const user = auth.user;
-	return (
-		<NavigationContainer>
-			{user == null && <Loading />}
-			{user == false && <Auth />}
-			{user == true && <Main />}
-		</NavigationContainer>
-	);
-};
+```
+/src/
+  /assets/          # Ressources médias (images, polices)
+  /components/      # Composants réutilisables
+    /common/        # Boutons, cartes, etc.
+    /forms/         # Formulaires
+    /utils/         # Composants utilitaires
+  /navigation/      # Configuration React Navigation
+  /provider/        # Contexte React (authentification, etc.)
+  /screens/         # Écrans de l'application
+    /auth/          # Authentification (login, inscription)
+    /reservations/  # Gestion des réservations
+    /courses/       # Gestion des cours
+    /profile/       # Profil utilisateur
+    /admin/         # Interface administrative
+  /services/        # Services (API, notifications)
+  /types/           # Types TypeScript
 ```
 
-# Rapi UI
+## Documentation complémentaire
 
-![../media/hero.png](../media/hero.png)
+Pour plus d'informations sur le projet, veuillez consulter :
+- [Cahier de test](./Cahier%20de%20test.md) : Scénarios de test et validation
+- [Dossier d'Architecture](./DA.md) : Architecture technique détaillée
 
-These UI components are provided by [Rapi UI](https://rapi-ui.kikiding.space/).
-Check the [documentation](https://rapi-ui.kikiding.space/docs/) for usage and more components.
+## Captures d'écran
 
-# File Managements
+![MCD](./CaptureLooping%20MCD.PNG)
+*Modèle Conceptuel des Données*
 
-These are the folders and the functionality all in `src/`
+---
 
-```jsx
-/src/assets -> for media such as images, etc
-/src/components -> for components
-/src/navigation -> for React Navigation
-/src/provider -> for React Context
-/src/screens -> for Screens
-/src/types -> for Types
-```
-
-if you find these useful don't forget to give it a star ⭐ and share it to your friends ❤️
-
-Reach me on [twitter](https://twitter.com/kikiding/)
+*Projet développé dans le cadre d'un BTS SIO SLAM - Épreuve E5*
