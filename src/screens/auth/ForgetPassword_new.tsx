@@ -22,20 +22,19 @@ import { AuthStackParamList } from "../../types/navigation";
 
 export default function ({
   navigation,
-}: NativeStackScreenProps<AuthStackParamList, "Login">) {
+}: NativeStackScreenProps<AuthStackParamList, "ForgetPassword">) {
   const { isDarkmode, setTheme } = useTheme();
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  async function login() {
+  async function forget() {
     setLoading(true);
-    const { user, error } = await supabase.auth.signIn({
-      email: email,
-      password: password,
-    });
+    const { data, error } = await supabase.auth.api.resetPasswordForEmail(email);
     if (error) {
       setLoading(false);
       alert(error.message);
+    } else {
+      setLoading(false);
+      alert("Vérifiez votre email pour réinitialiser votre mot de passe !");
     }
   }
 
@@ -43,7 +42,15 @@ export default function ({
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
         <TopNav
-          middleContent="Connexion"
+          middleContent="Mot de passe oublié"
+          leftContent={
+            <Ionicons
+              name="chevron-back"
+              size={20}
+              color={isDarkmode ? themeColor.white100 : themeColor.dark}
+            />
+          }
+          leftAction={() => navigation.goBack()}
           rightContent={
             <Ionicons
               name={isDarkmode ? "sunny" : "moon"}
@@ -78,7 +85,7 @@ export default function ({
                 height: 220,
                 width: 220,
               }}
-              source={require("../../../assets/images/login.png")}
+              source={require("../../../assets/images/forget.png")}
             />
           </View>
           <View
@@ -97,7 +104,18 @@ export default function ({
               }}
               size="h3"
             >
-              Centre Sportif
+              Réinitialiser le mot de passe
+            </Text>
+            <Text
+              style={{
+                alignSelf: "center",
+                padding: 30,
+                marginTop: -30,
+                textAlign: "center",
+              }}
+            >
+              Entrez votre adresse email et nous vous enverrons un lien pour
+              réinitialiser votre mot de passe.
             </Text>
             <Text>Email</Text>
             <TextInput
@@ -110,20 +128,10 @@ export default function ({
               onChangeText={(text) => setEmail(text)}
             />
 
-            <Text style={{ marginTop: 15 }}>Mot de passe</Text>
-            <TextInput
-              containerStyle={{ marginTop: 15 }}
-              placeholder="Entrez votre mot de passe"
-              value={password}
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry={true}
-              onChangeText={(text) => setPassword(text)}
-            />
             <Button
-              text={loading ? "Connexion..." : "Se connecter"}
+              text={loading ? "Envoi..." : "Envoyer le lien"}
               onPress={() => {
-                login();
+                forget();
               }}
               style={{
                 marginTop: 20,
@@ -139,10 +147,9 @@ export default function ({
                 justifyContent: "center",
               }}
             >
-              <Text size="md">Pas de compte ? </Text>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("Register");
+                  navigation.navigate("Login");
                 }}
               >
                 <Text
@@ -152,31 +159,7 @@ export default function ({
                     color: themeColor.primary,
                   }}
                 >
-                  Créer un compte
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 10,
-                justifyContent: "center",
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("ForgetPassword");
-                }}
-              >
-                <Text
-                  size="md"
-                  fontWeight="bold"
-                  style={{
-                    color: themeColor.primary,
-                  }}
-                >
-                  Mot de passe oublié ?
+                  Retour à la connexion
                 </Text>
               </TouchableOpacity>
             </View>

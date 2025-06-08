@@ -22,20 +22,25 @@ import { AuthStackParamList } from "../../types/navigation";
 
 export default function ({
   navigation,
-}: NativeStackScreenProps<AuthStackParamList, "Login">) {
+}: NativeStackScreenProps<AuthStackParamList, "Register">) {
   const { isDarkmode, setTheme } = useTheme();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  async function login() {
+  async function register() {
     setLoading(true);
-    const { user, error } = await supabase.auth.signIn({
+    const { user, error } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
     if (error) {
       setLoading(false);
       alert(error.message);
+    } else {
+      setLoading(false);
+      alert("Vérifiez votre email pour confirmer votre inscription !");
     }
   }
 
@@ -43,7 +48,15 @@ export default function ({
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
         <TopNav
-          middleContent="Connexion"
+          middleContent="Inscription"
+          leftContent={
+            <Ionicons
+              name="chevron-back"
+              size={20}
+              color={isDarkmode ? themeColor.white100 : themeColor.dark}
+            />
+          }
+          leftAction={() => navigation.goBack()}
           rightContent={
             <Ionicons
               name={isDarkmode ? "sunny" : "moon"}
@@ -75,10 +88,10 @@ export default function ({
             <Image
               resizeMode="contain"
               style={{
-                height: 220,
-                width: 220,
+                height: 200,
+                width: 200,
               }}
-              source={require("../../../assets/images/login.png")}
+              source={require("../../../assets/images/register.png")}
             />
           </View>
           <View
@@ -97,9 +110,30 @@ export default function ({
               }}
               size="h3"
             >
-              Centre Sportif
+              Créer un compte
             </Text>
-            <Text>Email</Text>
+            
+            <Text>Prénom</Text>
+            <TextInput
+              containerStyle={{ marginTop: 15 }}
+              placeholder="Entrez votre prénom"
+              value={firstName}
+              autoCapitalize="words"
+              autoCorrect={false}
+              onChangeText={(text) => setFirstName(text)}
+            />
+
+            <Text style={{ marginTop: 15 }}>Nom</Text>
+            <TextInput
+              containerStyle={{ marginTop: 15 }}
+              placeholder="Entrez votre nom"
+              value={lastName}
+              autoCapitalize="words"
+              autoCorrect={false}
+              onChangeText={(text) => setLastName(text)}
+            />
+
+            <Text style={{ marginTop: 15 }}>Email</Text>
             <TextInput
               containerStyle={{ marginTop: 15 }}
               placeholder="Entrez votre email"
@@ -120,10 +154,11 @@ export default function ({
               secureTextEntry={true}
               onChangeText={(text) => setPassword(text)}
             />
+            
             <Button
-              text={loading ? "Connexion..." : "Se connecter"}
+              text={loading ? "Inscription..." : "S'inscrire"}
               onPress={() => {
-                login();
+                register();
               }}
               style={{
                 marginTop: 20,
@@ -139,10 +174,10 @@ export default function ({
                 justifyContent: "center",
               }}
             >
-              <Text size="md">Pas de compte ? </Text>
+              <Text size="md">Déjà un compte ? </Text>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("Register");
+                  navigation.navigate("Login");
                 }}
               >
                 <Text
@@ -152,31 +187,7 @@ export default function ({
                     color: themeColor.primary,
                   }}
                 >
-                  Créer un compte
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 10,
-                justifyContent: "center",
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("ForgetPassword");
-                }}
-              >
-                <Text
-                  size="md"
-                  fontWeight="bold"
-                  style={{
-                    color: themeColor.primary,
-                  }}
-                >
-                  Mot de passe oublié ?
+                  Se connecter
                 </Text>
               </TouchableOpacity>
             </View>

@@ -6,10 +6,13 @@ import TabBarIcon from "../components/utils/TabBarIcon";
 import TabBarText from "../components/utils/TabBarText";
 
 import Home from "../screens/Home";
-import About from "../screens/About";
 import Profile from "../screens/Profile";
+import ReservationsScreen from "../screens/reservations/ReservationsScreen";
+import CoursesScreen from "../screens/courses/CoursesScreen";
+import EquipmentScreen from "../screens/equipment/EquipmentScreen";
+import { MainTabsParamList } from "../types/navigation";
 
-const Tabs = createBottomTabNavigator();
+const Tabs = createBottomTabNavigator<MainTabsParamList>();
 const MainTabs = () => {
   const { isDarkmode } = useTheme();
   return (
@@ -22,40 +25,72 @@ const MainTabs = () => {
         },
       }}
     >
-      {/* these icons using Ionicons */}
+      {/* Accueil */}
       <Tabs.Screen
         name="Home"
         component={Home}
         options={{
           tabBarLabel: ({ focused }) => (
-            <TabBarText focused={focused} title="Home" />
+            <TabBarText focused={focused} title="Accueil" />
           ),
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} icon={"md-home"} />
+            <TabBarIcon focused={focused} icon={"home"} />
           ),
         }}
       />
+      
+      {/* Réservations */}
+      <Tabs.Screen
+        name="Reservations"
+        component={ReservationsScreen}
+        options={{
+          tabBarLabel: ({ focused }) => (
+            <TabBarText focused={focused} title="Réservations" />
+          ),
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} icon={"calendar"} />
+          ),
+        }}
+      />
+      
+      {/* Cours */}
+      <Tabs.Screen
+        name="Courses"
+        component={CoursesScreen}
+        options={{
+          tabBarLabel: ({ focused }) => (
+            <TabBarText focused={focused} title="Cours" />
+          ),
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} icon={"school"} />
+          ),
+        }}
+      />
+      
+      {/* Équipement */}
+      <Tabs.Screen
+        name="Equipment"
+        component={EquipmentScreen}
+        options={{
+          tabBarLabel: ({ focused }) => (
+            <TabBarText focused={focused} title="Équipement" />
+          ),
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} icon={"fitness"} />
+          ),
+        }}
+      />
+      
+      {/* Profil */}
       <Tabs.Screen
         name="Profile"
         component={Profile}
         options={{
           tabBarLabel: ({ focused }) => (
-            <TabBarText focused={focused} title="Profile" />
+            <TabBarText focused={focused} title="Profil" />
           ),
           tabBarIcon: ({ focused }) => (
             <TabBarIcon focused={focused} icon={"person"} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="About"
-        component={About}
-        options={{
-          tabBarLabel: ({ focused }) => (
-            <TabBarText focused={focused} title="About" />
-          ),
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} icon={"ios-information-circle"} />
           ),
         }}
       />

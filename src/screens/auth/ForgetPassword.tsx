@@ -83,13 +83,12 @@ export default function ({
             >
               Forget Password
             </Text>
-            <Text>Email</Text>
-            <TextInput
+            <Text>Email</Text>            <TextInput
               containerStyle={{ marginTop: 15 }}
               placeholder="Enter your email"
               value={email}
               autoCapitalize="none"
-              autoCompleteType="off"
+              autoComplete="off"
               autoCorrect={false}
               keyboardType="email-address"
               onChangeText={(text) => setEmail(text)}

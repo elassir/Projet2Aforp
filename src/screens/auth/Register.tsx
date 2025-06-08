@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import {
   ScrollView,
   TouchableOpacity,
@@ -7,8 +6,6 @@ import {
   KeyboardAvoidingView,
   Image,
 } from "react-native";
-import { supabase } from "../../initSupabase";
-import { AuthStackParamList } from "../../types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   Layout,
@@ -17,7 +14,11 @@ import {
   Button,
   useTheme,
   themeColor,
+  TopNav,
 } from "react-native-rapi-ui";
+import { Ionicons } from "@expo/vector-icons";
+import { supabase } from "../../initSupabase";
+import { AuthStackParamList } from "../../types/navigation";
 
 export default function ({
   navigation,
@@ -25,26 +26,52 @@ export default function ({
   const { isDarkmode, setTheme } = useTheme();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-
   async function register() {
     setLoading(true);
     const { user, error } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
-    if (!error && !user) {
-      setLoading(false);
-      alert("Check your email for the login link!");
-    }
     if (error) {
       setLoading(false);
       alert(error.message);
+    } else {
+      setLoading(false);
+      alert("Vérifiez votre email pour confirmer votre inscription !");
     }
   }
+
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
+        <TopNav
+          middleContent="Inscription"
+          leftContent={
+            <Ionicons
+              name="chevron-back"
+              size={20}
+              color={isDarkmode ? themeColor.white100 : themeColor.dark}
+            />
+          }
+          leftAction={() => navigation.goBack()}
+          rightContent={
+            <Ionicons
+              name={isDarkmode ? "sunny" : "moon"}
+              size={20}
+              color={isDarkmode ? themeColor.white100 : themeColor.dark}
+            />
+          }
+          rightAction={() => {
+            if (isDarkmode) {
+              setTheme("light");
+            } else {
+              setTheme("dark");
+            }
+          }}
+        />
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -61,8 +88,8 @@ export default function ({
             <Image
               resizeMode="contain"
               style={{
-                height: 220,
-                width: 220,
+                height: 200,
+                width: 200,
               }}
               source={require("../../../assets/images/register.png")}
             />
@@ -77,39 +104,59 @@ export default function ({
           >
             <Text
               fontWeight="bold"
-              size="h3"
               style={{
                 alignSelf: "center",
                 padding: 30,
               }}
+              size="h3"
             >
-              Register
+              Créer un compte
             </Text>
-            <Text>Email</Text>
+            
+            <Text>Prénom</Text>
             <TextInput
               containerStyle={{ marginTop: 15 }}
-              placeholder="Enter your email"
+              placeholder="Entrez votre prénom"
+              value={firstName}
+              autoCapitalize="words"
+              autoCorrect={false}
+              onChangeText={(text) => setFirstName(text)}
+            />
+
+            <Text style={{ marginTop: 15 }}>Nom</Text>
+            <TextInput
+              containerStyle={{ marginTop: 15 }}
+              placeholder="Entrez votre nom"
+              value={lastName}
+              autoCapitalize="words"
+              autoCorrect={false}
+              onChangeText={(text) => setLastName(text)}
+            />
+
+            <Text style={{ marginTop: 15 }}>Email</Text>
+            <TextInput
+              containerStyle={{ marginTop: 15 }}
+              placeholder="Entrez votre email"
               value={email}
               autoCapitalize="none"
-              autoCompleteType="off"
               autoCorrect={false}
               keyboardType="email-address"
               onChangeText={(text) => setEmail(text)}
             />
 
-            <Text style={{ marginTop: 15 }}>Password</Text>
+            <Text style={{ marginTop: 15 }}>Mot de passe</Text>
             <TextInput
               containerStyle={{ marginTop: 15 }}
-              placeholder="Enter your password"
+              placeholder="Entrez votre mot de passe"
               value={password}
               autoCapitalize="none"
-              autoCompleteType="off"
               autoCorrect={false}
               secureTextEntry={true}
               onChangeText={(text) => setPassword(text)}
             />
+            
             <Button
-              text={loading ? "Loading" : "Create an account"}
+              text={loading ? "Inscription..." : "S'inscrire"}
               onPress={() => {
                 register();
               }}
@@ -127,7 +174,7 @@ export default function ({
                 justifyContent: "center",
               }}
             >
-              <Text size="md">Already have an account?</Text>
+              <Text size="md">Déjà un compte ? </Text>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate("Login");
@@ -137,34 +184,10 @@ export default function ({
                   size="md"
                   fontWeight="bold"
                   style={{
-                    marginLeft: 5,
+                    color: themeColor.primary,
                   }}
                 >
-                  Login here
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 30,
-                justifyContent: "center",
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  isDarkmode ? setTheme("light") : setTheme("dark");
-                }}
-              >
-                <Text
-                  size="md"
-                  fontWeight="bold"
-                  style={{
-                    marginLeft: 5,
-                  }}
-                >
-                  {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+                  Se connecter
                 </Text>
               </TouchableOpacity>
             </View>

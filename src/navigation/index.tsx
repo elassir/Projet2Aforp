@@ -9,12 +9,12 @@ import Loading from '../screens/utils/Loading';
 
 export default () => {
 	const auth = useContext(AuthContext);
-	const user = auth.user;
+	const { user, loading } = auth;
 	return (
 		<NavigationContainer>
-			{user == null && <Loading />}
-			{user == false && <Auth />}
-			{user == true && <Main />}
+			{loading && <Loading />}
+			{!loading && !user && <Auth />}
+			{!loading && user && <Main />}
 		</NavigationContainer>
 	);
 };
