@@ -12,7 +12,6 @@ import {
   Text,
   TextInput,
   Button,
-  useTheme,
   themeColor,
   TopNav,
 } from "react-native-rapi-ui";
@@ -23,13 +22,16 @@ import { AuthStackParamList } from "../../types/navigation";
 export default function ({
   navigation,
 }: NativeStackScreenProps<AuthStackParamList, "Login">) {
-  const { isDarkmode, setTheme } = useTheme();
+  const [isDarkmode, setIsDarkmode] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  async function login() {
+  
+  const setTheme = (theme: string) => {
+    setIsDarkmode(theme === "dark");
+  };async function login() {
     setLoading(true);
-    const { user, error } = await supabase.auth.signIn({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });

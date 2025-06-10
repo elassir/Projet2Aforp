@@ -38,10 +38,9 @@ export class CourseService {
     
     if (error) throw error;
     return data || [];
-  }
-  // S'inscrire à un cours
+  }  // S'inscrire à un cours
   static async enrollInCourse(data: CreateCourseEnrollmentData): Promise<CourseEnrollment> {
-    const user = supabase.auth.user();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Utilisateur non authentifié');
 
     // Vérifier si l'utilisateur n'est pas déjà inscrit
@@ -90,10 +89,9 @@ export class CourseService {
     if (updateError) throw updateError;
 
     return enrollment;
-  }
-  // Récupérer les inscriptions d'un utilisateur
+  }  // Récupérer les inscriptions d'un utilisateur
   static async getUserEnrollments(): Promise<CourseEnrollment[]> {
-    const user = supabase.auth.user();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Utilisateur non authentifié');
 
     const { data, error } = await supabase
@@ -152,10 +150,9 @@ export class CourseService {
       .eq('id', enrollment.course_id);
 
     if (decrementError) throw decrementError;
-  }
-  // Récupérer l'inscription d'un utilisateur pour un cours spécifique
+  }  // Récupérer l'inscription d'un utilisateur pour un cours spécifique
   static async getUserCourseEnrollment(courseId: string): Promise<CourseEnrollment | null> {
-    const user = supabase.auth.user();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
 
     const { data, error } = await supabase

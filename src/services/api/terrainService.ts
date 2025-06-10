@@ -65,10 +65,9 @@ export class TerrainService {
       terrain_id: terrainId,
       slots
     };
-  }
-  // Créer une nouvelle réservation
+  }  // Créer une nouvelle réservation
   static async createReservation(data: CreateReservationData): Promise<Reservation> {
-    const user = supabase.auth.user();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Utilisateur non authentifié');
 
     // Calculer le montant total
@@ -137,10 +136,9 @@ export class TerrainService {
       .insert(equipmentReservations);
 
     if (error) throw error;
-  }
-  // Récupérer les réservations d'un utilisateur
+  }  // Récupérer les réservations d'un utilisateur
   static async getUserReservations(): Promise<Reservation[]> {
-    const user = supabase.auth.user();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Utilisateur non authentifié');
 
     const { data, error } = await supabase

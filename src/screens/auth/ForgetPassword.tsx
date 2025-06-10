@@ -28,7 +28,7 @@ export default function ({
 
   async function forget() {
     setLoading(true);
-    const { data, error } = await supabase.auth.api.resetPasswordForEmail(
+    const { data, error } = await supabase.auth.resetPasswordForEmail(
       email
     );
     if (!error) {
