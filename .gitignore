@@ -9,5 +9,6 @@ npm-debug.*
 *.orig.*
 web-build/
 /src/initSupabase.ts
+src/initSupabase.ts
 # macOS
 .DS_Store
