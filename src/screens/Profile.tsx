@@ -20,134 +20,85 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../initSupabase';
-import { useAuth } from '../provider/AuthProvider';
+import { useAuthHybrid } from '../provider/AuthProviderHybrid';
 import { MainStackNavigationProp } from '../types/navigation';
-
-interface UserProfile {
-  id: string;
-  email: string;
-  full_name?: string;
-  phone?: string;
-  date_of_birth?: string;
-  address?: string;
-  avatar_url?: string;
-  created_at: string;
-}
 
 export default function ProfileScreen() {
   const { isDarkmode } = useTheme();
   const navigation = useNavigation<MainStackNavigationProp>();
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuthHybrid();
   
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   
   // États pour l'édition
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
+  const [nom, setNom] = useState('');
+  const [prenom, setPrenom] = useState('');
 
   useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
-    try {
-      setLoading(true);
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
-
-      if (data) {
-        setProfile(data);
-        setFullName(data.full_name || '');
-        setPhone(data.phone || '');
-        setAddress(data.address || '');
-      } else {
-        // Créer un profil par défaut
-        const defaultProfile = {
-          id: user.id,
-          email: user.email || '',
-          full_name: '',
-          phone: '',
-          address: '',
-          created_at: new Date().toISOString(),
-        };
-        setProfile(defaultProfile);
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement du profil:', error);
-      Alert.alert('Erreur', 'Impossible de charger votre profil');
-    } finally {
+    if (user) {
+      setNom(user.user_nom || '');
+      setPrenom(user.user_prenom || '');
       setLoading(false);
     }
+  }, [user]);
+  const handleCancel = () => {
+    setEditing(false);
+    setNom(user?.user_nom || '');
+    setPrenom(user?.user_prenom || '');
   };
-
   const handleSave = async () => {
-    if (!user || !profile) return;
-
+    if (!user?.email) return;
+    
+    setSaving(true);
     try {
-      setSaving(true);
-      
-      const updates = {
-        id: user.id,
-        full_name: fullName.trim(),
-        phone: phone.trim(),
-        address: address.trim(),
-        updated_at: new Date().toISOString(),
-      };
-
       const { error } = await supabase
-        .from('profiles')
-        .upsert(updates);
+        .from('users')
+        .update({
+          user_nom: nom,
+          user_prenom: prenom,
+        })
+        .eq('user_email', user.email);
 
-      if (error) throw error;
-
-      setProfile({ ...profile, ...updates });
-      setEditing(false);
-      Alert.alert('Succès', 'Votre profil a été mis à jour');
+      if (error) {
+        Alert.alert('Erreur', 'Impossible de mettre à jour le profil');
+        console.error('Erreur mise à jour profil:', error);
+      } else {
+        setEditing(false);
+        Alert.alert('Succès', 'Profil mis à jour avec succès');
+        // Optionnel: recharger les données utilisateur
+      }
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
-      Alert.alert('Erreur', 'Impossible de sauvegarder les modifications');
+      console.error('Erreur inattendue:', error);
+      Alert.alert('Erreur', 'Une erreur inattendue s\'est produite');
     } finally {
       setSaving(false);
     }
   };
-
-  const handleCancel = () => {
-    if (profile) {
-      setFullName(profile.full_name || '');
-      setPhone(profile.phone || '');
-      setAddress(profile.address || '');
-    }
-    setEditing(false);
-  };
-
   const handleSignOut = () => {
     Alert.alert(
       'Déconnexion',
       'Êtes-vous sûr de vouloir vous déconnecter ?',
       [
         { text: 'Annuler', style: 'cancel' },
-        { text: 'Déconnexion', style: 'destructive', onPress: signOut },
+        { text: 'Déconnexion', style: 'destructive', onPress: logout },
       ]
     );
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Date non disponible';
+    
+    try {
+      return new Date(dateString).toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (error) {
+      return 'Date non disponible';
+    }
   };
 
   if (loading) {
@@ -161,7 +112,7 @@ export default function ProfileScreen() {
     );
   }
 
-  if (!profile) {
+  if (!user) {
     return (
       <Layout>
         <TopNav middleContent="Mon Profil" />
@@ -203,19 +154,20 @@ export default function ProfileScreen() {
                   size={50}
                   color={isDarkmode ? '#9CA3AF' : '#6B7280'}
                 />
-              </View>
-              
-              <Text fontWeight="bold" size="xl" style={{ marginTop: 16, textAlign: 'center' }}>
-                {profile.full_name || 'Nom non renseigné'}
+              </View>                <Text fontWeight="bold" size="xl" style={{ marginTop: 16, textAlign: 'center' }}>
+                {user.user_prenom && user.user_nom 
+                  ? `${user.user_prenom} ${user.user_nom}` 
+                  : user.user_nom || 'Nom non renseigné'}
+              </Text>
+                <Text style={{ color: isDarkmode ? '#9CA3AF' : '#6B7280', textAlign: 'center' }}>
+                {user.email}
               </Text>
               
-              <Text style={{ color: isDarkmode ? '#9CA3AF' : '#6B7280', textAlign: 'center' }}>
-                {profile.email}
-              </Text>
-              
-              <Text size="sm" style={{ color: isDarkmode ? '#9CA3AF' : '#6B7280', textAlign: 'center', marginTop: 4 }}>
-                Membre depuis le {formatDate(profile.created_at)}
-              </Text>
+              {user.user_role && (
+                <Text size="sm" style={{ color: isDarkmode ? '#9CA3AF' : '#6B7280', textAlign: 'center', marginTop: 4 }}>
+                  Rôle: {user.user_role}
+                </Text>
+              )}
             </View>
           </SectionContent>
         </Section>
@@ -232,45 +184,26 @@ export default function ProfileScreen() {
               {editing ? (
                 <TextInput
                   placeholder="Votre nom complet"
-                  value={fullName}
-                  onChangeText={setFullName}
-                />
-              ) : (
+                  value={nom}
+                  onChangeText={setNom}
+                />              ) : (
                 <View style={[styles.infoField, { backgroundColor: isDarkmode ? '#374151' : '#F9FAFB' }]}>
-                  <Text>{profile.full_name || 'Non renseigné'}</Text>
+                  <Text>{user.user_nom || 'Non renseigné'}</Text>
                 </View>
               )}
             </View>
 
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ marginBottom: 8 }}>Téléphone</Text>
+              <Text style={{ marginBottom: 8 }}>Prénom</Text>
               {editing ? (
                 <TextInput
-                  placeholder="Votre numéro de téléphone"
-                  value={phone}
-                  onChangeText={setPhone}
-                  keyboardType="phone-pad"
+                  placeholder="Votre prénom"
+                  value={prenom}
+                  onChangeText={setPrenom}
                 />
               ) : (
                 <View style={[styles.infoField, { backgroundColor: isDarkmode ? '#374151' : '#F9FAFB' }]}>
-                  <Text>{profile.phone || 'Non renseigné'}</Text>
-                </View>
-              )}
-            </View>
-
-            <View style={{ marginBottom: 16 }}>
-              <Text style={{ marginBottom: 8 }}>Adresse</Text>
-              {editing ? (
-                <TextInput
-                  placeholder="Votre adresse"
-                  value={address}
-                  onChangeText={setAddress}
-                  multiline
-                  numberOfLines={3}
-                />
-              ) : (
-                <View style={[styles.infoField, { backgroundColor: isDarkmode ? '#374151' : '#F9FAFB' }]}>
-                  <Text>{profile.address || 'Non renseigné'}</Text>
+                  <Text>{user.user_prenom || 'Non renseigné'}</Text>
                 </View>
               )}
             </View>            {editing && (
@@ -295,9 +228,11 @@ export default function ProfileScreen() {
           <SectionContent>
             <Text fontWeight="bold" size="lg" style={{ marginBottom: 16 }}>
               Actions rapides
-            </Text>            <TouchableOpacity
+            </Text>
+            
+            <TouchableOpacity
               style={[styles.actionItem, { borderBottomColor: isDarkmode ? '#374151' : '#E5E7EB' }]}
-              onPress={() => navigation.navigate('MainTabs')}
+              onPress={() => navigation.navigate('ReservationsScreenSQL')}
             >
               <Ionicons name="calendar-outline" size={24} color={themeColor.primary} />
               <View style={{ flex: 1, marginLeft: 16 }}>
@@ -307,9 +242,11 @@ export default function ProfileScreen() {
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={isDarkmode ? '#9CA3AF' : '#6B7280'} />
-            </TouchableOpacity>            <TouchableOpacity
+            </TouchableOpacity>
+            
+            <TouchableOpacity
               style={[styles.actionItem, { borderBottomColor: isDarkmode ? '#374151' : '#E5E7EB' }]}
-              onPress={() => navigation.navigate('MainTabs')}
+              onPress={() => navigation.navigate('CoursScreenSQL')}
             >
               <Ionicons name="school-outline" size={24} color={themeColor.primary} />
               <View style={{ flex: 1, marginLeft: 16 }}>

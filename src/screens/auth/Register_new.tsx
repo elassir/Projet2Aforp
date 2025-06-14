@@ -5,6 +5,7 @@ import {
   View,
   KeyboardAvoidingView,
   Image,
+  Alert,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
@@ -17,7 +18,7 @@ import {
   TopNav,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { supabase } from "../../initSupabase";
+import { useAuthHybrid } from "../../provider/AuthProviderHybrid";
 import { AuthStackParamList } from "../../types/navigation";
 
 export default function ({
@@ -29,18 +30,46 @@ export default function ({
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { register: hybridRegister } = useAuthHybrid();
+
   async function register() {
+    if (!email.trim() || !password.trim() || !firstName.trim() || !lastName.trim()) {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Erreur", "Le mot de passe doit contenir au moins 6 caractères");
+      return;
+    }
+
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-    if (error) {
+    try {
+      const { error } = await hybridRegister(
+        email.trim(),
+        password,
+        lastName.trim(),
+        firstName.trim()
+      );
+      
+      if (error) {
+        Alert.alert("Erreur d'inscription", error.message);
+      } else {
+        Alert.alert(
+          "Inscription réussie",
+          "Vérifiez votre email pour confirmer votre inscription !",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.navigate("Login")
+            }
+          ]
+        );
+      }
+    } catch (error) {
+      Alert.alert("Erreur", "Une erreur inattendue s'est produite");
+    } finally {
       setLoading(false);
-      alert(error.message);
-    } else {
-      setLoading(false);
-      alert("Vérifiez votre email pour confirmer votre inscription !");
     }
   }
 

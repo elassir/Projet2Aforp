@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, ScrollView, TouchableOpacity, Alert } from "react-native";
 import { MainTabsParamList } from "../types/navigation";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { AuthContext } from "../provider/AuthProvider";
+import { useAuthHybrid } from "../provider/AuthProviderHybrid";
 import {
   Layout,
   Button,
@@ -25,15 +25,15 @@ type HomeScreenProps = CompositeScreenProps<
 
 export default function Home({ navigation }: HomeScreenProps) {
   const { isDarkmode, setTheme } = useTheme();
-  const auth = useContext(AuthContext);
+  const auth = useAuthHybrid();
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
     // Récupérer les infos du profil utilisateur
-    if (auth.session?.user) {
-      setUserProfile(auth.session.user);
+    if (auth.user) {
+      setUserProfile(auth.user);
     }
-  }, [auth.session]);
+  }, [auth.user]);
 
   const quickActions = [
     {
@@ -213,10 +213,9 @@ export default function Home({ navigation }: HomeScreenProps) {
                   "Voulez-vous vraiment vous déconnecter ?",
                   [
                     { text: "Annuler", style: "cancel" },
-                    { 
-                      text: "Déconnexion", 
+                    {                      text: "Déconnexion", 
                       style: "destructive",
-                      onPress: auth.signOut
+                      onPress: auth.logout
                     }
                   ]
                 );

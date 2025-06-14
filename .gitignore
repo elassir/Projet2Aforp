@@ -1,14 +1,116 @@
+# Node
 node_modules/**/*
-.expo/*
 npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Expo
+.expo/
+web-build/
+dist/
+.expo-shared/
+
+# Native
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 *.orig.*
-web-build/
+
+# Bundle artifacts
+*.bundle
+*.map
+
+# Supabase configuration (contient des clés sensibles)
 /src/initSupabase.ts
 src/initSupabase.ts
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Android/IntelliJ
+build/
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+
+# iOS
+pods/
+Pods/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/ios/.xcode.env.local
+
+# TypeScript
+*.tsbuildinfo
+.tsbuildinfo
+
+# Testing
+coverage/
+__tests__/coverage/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary files
+*.log
+*.tmp
+*.pid
+.tmp
+.cache
+
+# Expo Web
+web-report/
+
+# SQLite database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Build artifacts
+*.ipa
+*.apk
+*.aab
+
+/Cleanup_auth_providers.md
+
+data/
+node_modules/
+solution_finale_auth
+
+Migration_auth.md
+solution_finale_auth.md
+supabase-setup.sql
+Readme-sql.md
+Supabase_auth_verification.md
+/vscode/

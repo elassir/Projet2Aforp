@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { ThemeProvider } from "react-native-rapi-ui";
 import Navigation from "./src/navigation";
-import { AuthProvider } from "./src/provider/AuthProvider";
+import { AuthProviderHybrid } from "./src/provider/AuthProviderHybrid";
 
 export default function App() {
   const images = [
@@ -12,9 +12,9 @@ export default function App() {
   ];
   return (
     <ThemeProvider images={images}>
-      <AuthProvider>
+      <AuthProviderHybrid>
         <Navigation />
-      </AuthProvider>
+      </AuthProviderHybrid>
       <StatusBar />
     </ThemeProvider>
   );

@@ -5,6 +5,7 @@ import {
   View,
   KeyboardAvoidingView,
   Image,
+  Alert,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
@@ -16,7 +17,7 @@ import {
   TopNav,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { supabase } from "../../initSupabase";
+import { useAuthHybrid } from "../../provider/AuthProviderHybrid";
 import { AuthStackParamList } from "../../types/navigation";
 
 export default function ({
@@ -26,18 +27,28 @@ export default function ({
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { login: hybridLogin } = useAuthHybrid();
   
   const setTheme = (theme: string) => {
     setIsDarkmode(theme === "dark");
-  };async function login() {
+  };
+
+  async function login() {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs");
+      return;
+    }
+
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-    if (error) {
+    try {
+      const { error } = await hybridLogin(email.trim(), password);
+      if (error) {
+        Alert.alert("Erreur de connexion", error.message || "Identifiants incorrects");
+      }
+    } catch (error) {
+      Alert.alert("Erreur", "Une erreur inattendue s'est produite");
+    } finally {
       setLoading(false);
-      alert(error.message);
     }
   }
 

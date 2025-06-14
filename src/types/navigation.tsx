@@ -29,6 +29,7 @@ export type MainTabsParamList = {
 	Reservations: undefined;
 	Courses: undefined;
 	Equipment: undefined;
+	Terrains: undefined;
 	Profile: undefined;
 	Admin?: undefined; // Visible seulement pour les admins
 };
