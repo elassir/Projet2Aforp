@@ -32,11 +32,12 @@ const Main = () => {
       screenOptions={{
         headerShown: true, // Afficher les en-têtes pour déboguer
       }}
-    >        <MainStack.Screen 
+    >      
+      <MainStack.Screen 
         name="MainTabs" 
         component={TabsNavigation}
         options={{ 
-          title: "Centre Sportif",
+          title: "Navigation principale",
           headerLargeTitle: true
         }} 
       />

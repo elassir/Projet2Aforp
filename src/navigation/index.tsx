@@ -45,12 +45,13 @@ export default () => {
 	    });
 	  }
 	}, [loading, user]);
-		return (
+	
+	return (
 		<NavigationContainer>
 			{loading && <Loading />}
 			{!loading && !user && <Auth />}
 			{!loading && user && <Main />}
-			{/* Activation temporaire de l'écran de débogage pour vérifier l'authentification */}
+			{/* En cas d'erreur, décommenter la ligne ci-dessous pour afficher l'écran de débogage */}
 			{/* <DebugScreen user={user} loading={loading} /> */}
 		</NavigationContainer>
 	);

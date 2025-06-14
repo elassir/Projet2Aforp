@@ -62,8 +62,9 @@ const Tab = createBottomTabNavigator();
 
 export default function TabsNavigation() {
   const { isDarkmode } = useTheme();
-  return (    <Tab.Navigator
-      initialRouteName="Home" // Utiliser Home comme écran initial après débogage
+  return (
+    <Tab.Navigator
+      initialRouteName="Test" // Définir l'écran de test comme écran initial
       screenOptions={{
         headerShown: true, // Afficher les en-têtes pour voir les titres des écrans
         tabBarStyle: {
@@ -71,21 +72,8 @@ export default function TabsNavigation() {
           backgroundColor: isDarkmode ? themeColor.dark200 : "#ffffff",
         },
       }}
-    >      {/* Accueil */}      
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarLabel: ({ focused }) => (
-            <TabBarText focused={focused} title="Accueil" />
-          ),
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} icon={"home"} />
-          ),
-        }}
-      />
-      
-      {/* Écran de Test - Placé après Home */}
+    >
+      {/* Écran de Test */}
       <Tab.Screen
         name="Test"
         component={TestScreen}
@@ -96,6 +84,20 @@ export default function TabsNavigation() {
           ),
           tabBarIcon: ({ focused }) => (
             <TabBarIcon focused={focused} icon={"bug"} />
+          ),
+        }}
+      />
+      
+      {/* Accueil */}      
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: ({ focused }) => (
+            <TabBarText focused={focused} title="Accueil" />
+          ),
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} icon={"home"} />
           ),
         }}
       />
